@@ -1,6 +1,6 @@
 # RocketGeneticsGraphBuilder
 This project is chart builder for `fits.csv` and `hits.csv` files, generated in process of training a Neural Network with Genetic Algorithms. 
-View this repo: (PlanetGravity)[https://github.com/VitalikPretsel/PlanetGravity] 
+View this repo: [PlanetGravity](https://github.com/VitalikPretsel/PlanetGravity).
 
 ## Interface
 Interface is straightforward:
