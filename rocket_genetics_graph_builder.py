@@ -3,31 +3,20 @@ from tkinter import filedialog
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Open dialog windows to select the fitnesses.csv and hits.csv files
+# Open dialog window to select the fitnesses.csv file
 print("\nChoose first csv-file with fitnesses values ")
 root = tk.Tk()
 root.withdraw()
 file_path1 = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
 root.destroy()
-print("csv-file with factors: ", file_path1)
+print("csv-file with fitnesses: ", file_path1)
 fitnesses_file = pd.read_csv(file_path1)
         
-print("\nChoose second csv-file with hits values ")
-root = tk.Tk()
-root.withdraw()
-file_path2 = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
-root.destroy()
-print("csv-file with experiments results: ", file_path1)
-hits_file = pd.read_csv(file_path2)
-
 # Extract data from fitnesses.csv
 fitnesses_data = fitnesses_file.values
 fitnesses_data = fitnesses_data[:, :-1].astype(float)
 best_fitness = fitnesses_data.max(axis=1)
 mean_fitness = fitnesses_data.mean(axis=1)
-
-# Extract data from hits.csv
-hits_data = hits_file.values.flatten()
 
 # Create a new figure and plot the charts
 fig, ax1 = plt.subplots()
@@ -39,12 +28,55 @@ ax1.set_xlabel('Generation Number')
 ax1.set_ylabel('Fitness')
 ax1.legend(loc='lower right')
 
-# Create a secondary y-axis for percent of hits
-ax2 = ax1.twinx()
-ax2.plot(range(0, len(hits_data)), hits_data, 'g', label='Percent of Hits')
-ax2.set_ylabel('Percent of Hits')
-ax2.legend(loc='lower center')
+title = 'Generation Fitness'
 
-plt.title('Fitness and Percent of Hits')
+# Open dialog window to select the hits.csv file
+manual_fill = input("\nDo you want to plot hits? (yes/no) ")
+if manual_fill.lower()[0] == "y":
+    print("\nChoose second csv-file with hits values ")
+    root = tk.Tk()
+    root.withdraw()
+    file_path2 = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
+    root.destroy()
+    print("csv-file with hits: ", file_path2)
+    hits_file = pd.read_csv(file_path2)
+    
+    # Extract data from hits.csv
+    hits_data = hits_file.values.flatten()
+
+    # Create a secondary y-axis for percent of hits
+    ax2 = ax1.twinx()
+    ax2.plot(range(0, len(hits_data)), hits_data, 'g', label='Percent of Hits')
+    ax2.set_ylabel('Percent of Hits')
+    ax2.legend(loc='lower center')
+
+    title = 'Generation Fitness and Percent of Hits'
+
+
+# Open dialog window to select the params.csv file
+manual_fill = input("\nDo you want to plot params? (yes/no) ")
+if manual_fill.lower()[0] == "y":
+    print("\nChoose third csv-file with params values ")
+    root = tk.Tk()
+    root.withdraw()
+    file_path3 = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
+    root.destroy()
+    print("csv-file with params: ", file_path3)
+    params_file = pd.read_csv(file_path3)
+
+    node_chance = params_file.iloc[:, 0].values
+    con_chance = params_file.iloc[:, 1].values
+    weight_chance = params_file.iloc[:, 2].values
+
+    # Create a secondary y-axis for params values
+    ax3 = ax1.twinx()
+    ax3.plot(range(0, len(node_chance)), node_chance, 'gray', ls='--', label='Node mutation chance')
+    ax3.plot(range(0, len(con_chance)), con_chance, 'gray', ls='-.', label='Connection mutation chance')
+    ax3.plot(range(0, len(weight_chance)), weight_chance, 'gray', ls=':', label='Weight mutation chance')
+    ax3.set_ylabel('Params value')
+    ax3.legend(loc='center right')
+
+
+plt.title(title)
 plt.show()
 
