@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.colors as clr
 
 # Open dialog window to select the fitnesses.csv file
 print("\nChoose first csv-file with fitnesses values ")
@@ -79,4 +80,50 @@ if manual_fill.lower()[0] == "y":
 
 plt.title(title)
 plt.show()
+
+
+# Open dialog window to select the speciess.csv file
+manual_fill = input("\nDo you want to plot species? (yes/no) ")
+if manual_fill.lower()[0] == "y":
+    print("\nChoose csv-file with species values ")
+    root = tk.Tk()
+    root.withdraw()
+    file_path4 = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
+    root.destroy()
+    print("csv-file with species: ", file_path4)
+
+    import numpy
+    from io import StringIO
+    with open(file_path4, 'r') as file:
+        lines = file.readlines()
+    max_columns = max(len(line.split(',')) for line in lines)
+    modified_lines = [line.strip() + (',' * (max_columns - len(line.split(',')))) + '\n' for line in lines]
+    species_file = pd.read_csv(StringIO(''.join(modified_lines)), header=None)
+
+    fig, ax = plt.subplots()
+
+    all_values = [numpy.zeros(len(lines))]
+    # Iterate through each set of values and colors
+    for i in range(0, len(species_file.columns)-1, 2):
+        print(f'{i/(len(species_file.columns)-1)*100}% ')
+        bottoms = numpy.array(all_values).sum(axis=0)
+        values = species_file.iloc[:, i].fillna(0).values
+        all_values.append(values)
+        colors = list(map(lambda c: ((str)(c)).strip(), species_file.iloc[:, i + 1].fillna('#FFFFFF').values))
+        bars = ax.bar(range(len(species_file)), values, width=1, bottom=bottoms, color=colors)
+    print('100%')
+    #for bar in ax.patches:
+    #    ax.text(bar.get_x() + bar.get_width() / 2,
+    #        bar.get_height() / 2 + bar.get_y(),
+    #        round(bar.get_height()), ha = 'center',
+    #        color = 'black', weight = 'bold', size = 10)
+
+    if (len(species_file) < 100):
+        ax.set_xticks(range(len(species_file)))
+        ax.set_xticklabels(species_file.index)
+    ax.set_xlabel('Generation')
+    ax.set_ylabel('Members count')
+
+    plt.title("Species")
+    plt.show()
 
