@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.colors as clr
 
 # Open dialog window to select the fitnesses.csv file
 print("\nChoose first csv-file with fitnesses values ")
@@ -18,6 +18,8 @@ fitnesses_data = fitnesses_file.values
 fitnesses_data = fitnesses_data[:, :-1].astype(float)
 best_fitness = fitnesses_data.max(axis=1)
 mean_fitness = fitnesses_data.mean(axis=1)
+index_of_best_fitness = np.argmax(best_fitness)
+index_of_mean_fitness = np.argmax(mean_fitness)
 
 # Create a new figure and plot the charts
 fig, ax1 = plt.subplots()
@@ -44,6 +46,7 @@ if manual_fill.lower()[0] == "y":
     
     # Extract data from hits.csv
     hits_data = hits_file.values.flatten()
+    index_of_max_hit = np.argmax(hits_data)
 
     # Create a secondary y-axis for percent of hits
     ax2 = ax1.twinx()
@@ -80,6 +83,15 @@ if manual_fill.lower()[0] == "y":
 
 plt.title(title)
 plt.show()
+
+
+# Plot some stats
+print("====== Some stats ======")
+print(f'Highest best fitness: {best_fitness[index_of_best_fitness]} at generation {index_of_best_fitness}')
+print(f'Highest mean fitness: {mean_fitness[index_of_mean_fitness]} at generation {index_of_mean_fitness}')
+if index_of_max_hit:
+    print(f'Highest mean hits percent: {hits_data[index_of_max_hit]} at generation {index_of_max_hit}')
+
 
 
 # Open dialog window to select the speciess.csv file
